@@ -1,0 +1,106 @@
+Crime Analytics – How to Run (English)
+======================================
+
+Project files
+-------------
+1) part 4.py
+   - Connects to the DuckLake (full_data.ducklake)
+   - Runs a small example JOIN query
+   - Exports example_rows_stage4.csv
+
+2) create the gold.py
+   - Connects to the DuckLake (full_data.ducklake)
+   - Runs queries Q1–Q6 in DuckDB
+   - Creates/overwrites the SQLite database: gold.db
+   - Writes GOLD summary tables into SQLite
+   - Creates *_sample tables only when the full table has more than 500 rows
+   - Creates and fills table_catalog inside gold.db
+
+3) app.py
+   - Streamlit dashboard that reads ONLY from gold.db (SQLite)
+   - Shows preview tables + sample tables (when they exist)
+   - Displays 2D visualizations (Matplotlib + one Seaborn heatmap)
+   - Stores user feedback into SQLite table: user_feedback
+
+
+Requirements
+------------
+- Python 3.10+ recommended
+- The following packages must be installed (see requirements.txt):
+  duckdb, pandas, streamlit, matplotlib, seaborn
+
+- Files that must be in the same folder when running:
+  app.py
+  gold.db   (created by "create the gold.py")
+
+- If you want to run the DuckDB/DuckLake steps, you also need:
+  full_data.ducklake
+  full_data.ducklake.files/   (folder created together with the DuckLake file)
+
+
+Step 1 – Install dependencies
+-----------------------------
+Open a terminal in the project folder:
+
+1) (Recommended) Create a virtual environment:
+   python -m venv .venv
+
+2) Activate it:
+   Windows:
+     .venv\Scripts\activate
+   Mac/Linux:
+     source .venv/bin/activate
+
+3) Install packages:
+   pip install -r requirements.txt
+
+
+Step 2 – Create / rebuild gold.db (SQLite GOLD)
+-----------------------------------------------
+If gold.db already exists and contains all required tables, you can skip this step.
+
+Run:
+  python "create the gold.py"
+
+Expected output:
+- gold.db is created/updated in the current folder
+- Tables q1_area_pareto ... q6_load_vs_outcome_corr are created in SQLite
+- table_catalog is created and filled
+- *_sample tables are created only if the full table has more than 500 rows
+
+
+Step 3 – Run the Streamlit dashboard
+------------------------------------
+Make sure gold.db is in the same folder as app.py, then run:
+
+  streamlit run app.py
+
+Streamlit will open the dashboard in your browser (usually http://localhost:8501).
+
+
+Step 4 – Run the example export (optional)
+------------------------------------------
+To generate the example CSV:
+
+  python "part 4.py"
+
+Output file:
+  example_rows_stage4.csv
+
+
+Troubleshooting
+---------------
+1) "gold.db not found":
+   - Ensure gold.db is in the same folder as app.py
+   - Or update DB_PATH inside app.py
+
+2) Missing required tables in gold.db:
+   - Re-run:
+     python "create the gold.py"
+   - The dashboard checks REQUIRED_TABLES and stops if anything is missing
+
+3) DuckLake / ducklake errors:
+   - Ensure both exist in the run location:
+     full_data.ducklake
+     full_data.ducklake.files/
+   - If they are elsewhere, update the paths inside the scripts
