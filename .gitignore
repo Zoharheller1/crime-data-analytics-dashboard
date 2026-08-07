@@ -4,3 +4,5 @@ __pycache__/
 *.ducklake
 *.ducklake.files/
 .env
+~$*
+*.docx
